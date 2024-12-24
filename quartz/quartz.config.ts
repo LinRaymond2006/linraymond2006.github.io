@@ -8,19 +8,25 @@ import * as Plugin from "./quartz/plugins"
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "📝 Raymond's blog",
+    pageTitle: "🪴 Quartz 4.0",
+    pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
-    analytics: null,
+    analytics: {
+      provider: "plausible",
+    },
     locale: "en-US",
-    baseUrl: "linraymond2006.github.io/",
-    ignorePatterns: ["private", "_templates", ".obsidian"],
+    baseUrl: "quartz.jzhao.xyz",
+    ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",
+    generateSocialImages: false,
     theme: {
+      fontOrigin: "googleFonts",
+      cdnCaching: true,
       typography: {
         header: "Schibsted Grotesk",
-        body: "Roboto",
-        code: "Fira Code",
+        body: "Source Sans Pro",
+        code: "IBM Plex Mono",
       },
       colors: {
         lightMode: {
@@ -32,6 +38,7 @@ const config: QuartzConfig = {
           secondary: "#284b63",
           tertiary: "#84a59d",
           highlight: "rgba(143, 159, 169, 0.15)",
+          textHighlight: "#fff23688",
         },
         darkMode: {
           light: "#161618",
@@ -42,6 +49,7 @@ const config: QuartzConfig = {
           secondary: "#7b97aa",
           tertiary: "#84a59d",
           highlight: "rgba(143, 159, 169, 0.15)",
+          textHighlight: "#b3aa0288",
         },
       },
     },
@@ -50,8 +58,6 @@ const config: QuartzConfig = {
     transformers: [
       Plugin.FrontMatter(),
       Plugin.CreatedModifiedDate({
-        // you can add 'git' here for last modified from Git
-        // if you do rely on git for dates, ensure defaultDateType is 'modified'
         priority: ["frontmatter", "filesystem"],
       }),
       Plugin.SyntaxHighlighting({
