@@ -55,7 +55,7 @@ tags:
  - 更改檔案權限： `chmod`
  - 更改擁有者：`chown`
 
-TODO：可以新增更多描述
+
 
 # 環境變數
 
@@ -65,12 +65,9 @@ TODO：可以新增更多描述
 		 - `LD_PRELOAD` 中的函式會先被解析，因此可以用來 hook 特定的函式
 		 - `LD_LIBRARY_PATH`：會優先尋找並載入該目錄中的函式庫，因此用於更換 `libc` 版本很方便
 		 - 注意：這兩個環境變數會讓 suid 失效
+ - 定義環境變數
+	 - 臨時（關閉 shell 之後就沒有了）： `export VAR=VAL` 
+		 - 也可以用新增的方式：例如 `export PATH=$PATH:path/to/append`
+	 - 永久（單個使用者）：更改該使用者 `~` 目錄下的設定檔，bash 是 `~/.bashrc`
+	 - 永久（整個系統）：編輯 `/etc/profile` 中的內容
 
-
-TODO：之後寫一個關於 `LD_PRELOAD` 細節的紀錄
-TODO：之後寫關於分析 coredump 和 gdb 的紀錄
- - 啟用 coredump：
-	 - 臨時：`ulimit -c unlimited`
-	 - 永久：把 `/etc/security/limits.conf` 改成 `unlimited`（如果要禁用的話改成 `0`）
- - coredump pattern：
-	 - 改 `/proc/sys/kernel/core_pattern`
