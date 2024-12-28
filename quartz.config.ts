@@ -14,7 +14,7 @@ const config: QuartzConfig = {
     analytics: null,
     locale: "en-US",
     baseUrl: "linraymond2006.github.io/",
-    ignorePatterns: ["private", "_templates", ".obsidian", "TODO.md"],
+    ignorePatterns: ["private", "_templates", ".obsidian"],
     defaultDateType: "created",
     theme: {
       typography: {

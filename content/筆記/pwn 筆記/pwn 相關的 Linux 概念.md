@@ -71,3 +71,52 @@ tags:
 	 - 永久（單個使用者）：更改該使用者 `~` 目錄下的設定檔，bash 是 `~/.bashrc`
 	 - 永久（整個系統）：編輯 `/etc/profile` 中的內容
 
+
+# 緩解機制
+
+ - stack canary
+	 - aka stack cookies, stack guard, SSP
+	 - 原理：buffer overflow 時一定要概到 return address，所以在 return address 和舊的 base pointer 之前塞一個 canary，如果 canary 的值被更改，就會觸發保護機制
+	 - 可以參考 [StackGuard: Automatic Adaptive Detection and Prevention of Buffer-Overflow Attacks](https://web.archive.org/web/20241213183742/https://www.usenix.org/legacy/publications/library/proceedings/sec98/full_papers/cowan/cowan.pdf)
+	 - canary 的位置：在 TLS （thread local storage）中，每個執行緒都有自己的副本
+		 - x86：
+			 - TLS 中的偏移：`[GS:0x14]`
+			 - stack 上偏移：`[ebp - 0xc]`
+		 - x86_64
+			 - TLS 中的偏移：`[FS:0x28]`
+			 - stack 上的偏移：`[rbp - 0x8]`
+	 - `checksec` 對於 canary 的檢查：是否有 `__stack_chk_fail` 或 `__intel_security_cookie`
+	 - canary 也可能會在最後一個位元組放置截斷字元（`0x00`）來防止 canary 被讀出來
+	 - 如何繞過 canary：
+		 - 同時改 TLS 和 stack 上的 canary
+		 - 如果有使用到 fork 函式：新的 canary 會和舊的 canary 一樣，可以一次猜一個位元組
+		 - 可以參考 [Four different tricks to bypass stackshield and stackguard protection](https://web.archive.org/web/20221025223713/https://www.cs.purdue.edu/homes/xyzhang/fall07/Papers/defeat-stackguard.pdf)
+ - NX（No-eXecute）
+	 - aka DEP（Windows 上的 NX 叫做 Data Execution Protection）
+	 - 原理：把記憶體分頁標示為不可執行，由 `GNU_STACK` 這個 segment 的屬性紀錄（該段為空）
+	 - `checksec` 對於 NX 的檢查：`GNU_STACK` 的屬性是 `RW` 還是 `RWX`
+ - ASLR
+	 - Address Space Layout Randomization，由 kernel 提供的緩解措施
+	 - 等級： 0 / 1 / 2 三種，可由 `/proc/sys/kernel/randomize_va_space` 調整
+	    
+| ASLR | heap | stack | library | vdso | mmap |
+| ---- | ---- | ----- | ------- | ---- | ---- |
+| 0    | no   | no    | no      | no   | no   |
+| 1    | no   | yes   | yes     | yes  | yes  |
+| 2    | yes  | yes   | yes     | yes  | yes  |
+
+ - PIE
+	 - Position-Independent Executable，由 ELF loader 實作
+	 - 隨機化了可執行檔的基址
+	 - PIE：Position-Independent Executable：對於可執行檔的 PIE（可以想成，可執行檔對於動態連結器是一種特殊的 shared object）
+	 - PIC：Position-independent Code：對於 shared object 的 PIE
+ - FORTIFY_SOURCE
+	 - 原理：編譯時檢查，比免在執行時的危險
+	 - `gcc` 對於 FORTIFY_SOURCE 各種程度的檢查
+		 - 0：不檢查
+		 - 1：buffer overflow 的檢查
+		 - 2：buffer overflow + format string 的檢查
+	 - `gcc` 可以用 `-D_FORTIFY_SOURCE=[level]` 來指定 FORTIFY_SOURCE 的程度
+	 - `checksec` 對於 FORTIFY_SOURCE 的檢查：函式是否有 `_chk` 後綴
+ - RELRO
+	 - 尚未整理
