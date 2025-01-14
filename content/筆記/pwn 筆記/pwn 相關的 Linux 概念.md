@@ -73,50 +73,70 @@ tags:
 
 
 # 緩解機制
+## stack canary
 
- - stack canary
-	 - aka stack cookies, stack guard, SSP
-	 - 原理：buffer overflow 時一定要概到 return address，所以在 return address 和舊的 base pointer 之前塞一個 canary，如果 canary 的值被更改，就會觸發保護機制
-	 - 可以參考 [StackGuard: Automatic Adaptive Detection and Prevention of Buffer-Overflow Attacks](https://web.archive.org/web/20241213183742/https://www.usenix.org/legacy/publications/library/proceedings/sec98/full_papers/cowan/cowan.pdf)
-	 - canary 的位置：在 TLS （thread local storage）中，每個執行緒都有自己的副本
-		 - x86：
-			 - TLS 中的偏移：`[GS:0x14]`
-			 - stack 上偏移：`[ebp - 0xc]`
-		 - x86_64
-			 - TLS 中的偏移：`[FS:0x28]`
-			 - stack 上的偏移：`[rbp - 0x8]`
-	 - `checksec` 對於 canary 的檢查：是否有 `__stack_chk_fail` 或 `__intel_security_cookie`
-	 - canary 也可能會在最後一個位元組放置截斷字元（`0x00`）來防止 canary 被讀出來
-	 - 如何繞過 canary：
-		 - 同時改 TLS 和 stack 上的 canary
-		 - 如果有使用到 fork 函式：新的 canary 會和舊的 canary 一樣，可以一次猜一個位元組
-		 - 可以參考 [Four different tricks to bypass stackshield and stackguard protection](https://web.archive.org/web/20221025223713/https://www.cs.purdue.edu/homes/xyzhang/fall07/Papers/defeat-stackguard.pdf)
- - NX（No-eXecute）
-	 - aka DEP（Windows 上的 NX 叫做 Data Execution Protection）
-	 - 原理：把記憶體分頁標示為不可執行，由 `GNU_STACK` 這個 segment 的屬性紀錄（該段為空）
-	 - `checksec` 對於 NX 的檢查：`GNU_STACK` 的屬性是 `RW` 還是 `RWX`
- - ASLR
-	 - Address Space Layout Randomization，由 kernel 提供的緩解措施
-	 - 等級： 0 / 1 / 2 三種，可由 `/proc/sys/kernel/randomize_va_space` 調整
-	    
+ - aka stack cookies, stack guard, SSP
+ - 原理：buffer overflow 時一定要概到 return address，所以在 return address 和舊的 base pointer 之前塞一個 canary，如果 canary 的值被更改，就會觸發保護機制
+ - 可以參考 [StackGuard: Automatic Adaptive Detection and Prevention of Buffer-Overflow Attacks](https://web.archive.org/web/20241213183742/https://www.usenix.org/legacy/publications/library/proceedings/sec98/full_papers/cowan/cowan.pdf)
+ - canary 的位置：在 TLS （thread local storage）中，每個執行緒都有自己的副本
+	 - x86：
+		 - TLS 中的偏移：`[GS:0x14]`
+		 - stack 上偏移：`[ebp - 0xc]`
+	 - x86_64
+		 - TLS 中的偏移：`[FS:0x28]`
+		 - stack 上的偏移：`[rbp - 0x8]`
+ - `checksec` 對於 canary 的檢查：是否有 `__stack_chk_fail` 或 `__intel_security_cookie`
+ - canary 也可能會在最後一個位元組放置截斷字元（`0x00`）來防止 canary 被讀出來
+ - 如何繞過 canary：
+	 - 同時改 TLS 和 stack 上的 canary
+	 - 如果有使用到 fork 函式：新的 canary 會和舊的 canary 一樣，可以一次猜一個位元組
+	 - 可以參考 [Four different tricks to bypass stackshield and stackguard protection](https://web.archive.org/web/20221025223713/https://www.cs.purdue.edu/homes/xyzhang/fall07/Papers/defeat-stackguard.pdf)
+## NX（No-eXecute）
+
+ - aka DEP（Windows 上的 NX 叫做 Data Execution Protection）
+ - 原理：把記憶體分頁標示為不可執行，由 `GNU_STACK` 這個 segment 的屬性紀錄（該段為空）
+ - `checksec` 對於 NX 的檢查：`GNU_STACK` 的屬性是 `RW` 還是 `RWX`
+## ASLR
+
+ - Address Space Layout Randomization，由 kernel 提供的緩解措施
+ - 等級： 0 / 1 / 2 三種，可由 `/proc/sys/kernel/randomize_va_space` 調整
+
 | ASLR | heap | stack | library | vdso | mmap |
 | ---- | ---- | ----- | ------- | ---- | ---- |
 | 0    | no   | no    | no      | no   | no   |
 | 1    | no   | yes   | yes     | yes  | yes  |
 | 2    | yes  | yes   | yes     | yes  | yes  |
 
- - PIE
-	 - Position-Independent Executable，由 ELF loader 實作
-	 - 隨機化了可執行檔的基址
-	 - PIE：Position-Independent Executable：對於可執行檔的 PIE（可以想成，可執行檔對於動態連結器是一種特殊的 shared object）
-	 - PIC：Position-independent Code：對於 shared object 的 PIE
- - FORTIFY_SOURCE
-	 - 原理：編譯時檢查，比免在執行時的危險
-	 - `gcc` 對於 FORTIFY_SOURCE 各種程度的檢查
-		 - 0：不檢查
-		 - 1：buffer overflow 的檢查
-		 - 2：buffer overflow + format string 的檢查
-	 - `gcc` 可以用 `-D_FORTIFY_SOURCE=[level]` 來指定 FORTIFY_SOURCE 的程度
-	 - `checksec` 對於 FORTIFY_SOURCE 的檢查：函式是否有 `_chk` 後綴
- - RELRO
-	 - 尚未整理
+## PIE
+
+ - Position-Independent Executable，由 ELF loader 實作
+ - 隨機化了可執行檔的基址
+ - PIE：Position-Independent Executable：對於可執行檔的 PIE（可以想成，可執行檔對於動態連結器是一種特殊的 shared object）
+ - PIC：Position-independent Code：對於 shared object 的 PIE
+## FORTIFY_SOURCE
+
+ - 原理：編譯時檢查，比免在執行時的危險
+ - `gcc` 對於 FORTIFY_SOURCE 各種程度的檢查
+	 - 0：不檢查
+	 - 1：buffer overflow 的檢查
+	 - 2：buffer overflow + format string 的檢查
+ - `gcc` 可以用 `-D_FORTIFY_SOURCE=[level]` 來指定 FORTIFY_SOURCE 的程度
+ - `checksec` 對於 FORTIFY_SOURCE 的檢查：函式是否有 `_chk` 後綴
+## RELRO
+
+ - 原理：針對延遲綁定的弱點進行加強，因為第一次呼叫函數的時候 `.got.plt` 會從 plt stub 更新成函式的真正位址，所以 `.got.plt` 一定要是可寫的，這個特性給了攻擊者可以竄改地址進而劫持執行流的機會
+ - `.got`：全域符號表，存放了所有全域符號的位址
+	 - `.got.plt` 是 `.got`（GOT 表）的一部分，為存放函式位址的區域
+ 
+| 項目        | 內容                        |
+| --------- | ------------------------- |
+| `GOT[0]`  | `.dynamic` 節的基址           |
+| `GOT[1]`  | `link_map` 的位址            |
+| `GOT[2]`  | `_dl_runtime_resolve` 的位址 |
+| `GOT[3+]` | 其他的項目                     |
+ - PLT 表：呼叫函式時會呼叫 PLT stub，如果還沒綁定（第一次呼叫該函式），則會進行符號的解析以及重定位
+	 - 取出該函式在 `.rel.plt` 對應的值
+	 - 跳到 `GOT[2]` 上
+	 - 更新該函式對應的 GOT 表中的項目
+	 - 跳到該函式上執行（因為 GOT 表已經）
+ - 
