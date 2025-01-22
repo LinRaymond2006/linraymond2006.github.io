@@ -9,6 +9,11 @@ html {
   width: 100vw;
 }
 
+$breakpoints: (
+  mobile: 800px,
+  desktop: 1200px,
+);
+
 body,
 section {
   margin: 0;
