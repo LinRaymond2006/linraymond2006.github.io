@@ -58,6 +58,8 @@ tags:
      - 可以在某個 section 搜尋，也可以指定大小端，細節請見 `help secion`
  - `dump memory`
      - 把記憶體內容寫到檔案裡面
+- `list function_name`
+	- 印出檔案的 source code（如果有 debug symbol 的話）
 ### 其他
  - `bt` / `backtrace`：stack 的 backtrace
  - `vmmap` / `info proc mappings`：看記憶體布局
@@ -76,7 +78,8 @@ tags:
     gef➤  run_til_main 
     ...
     ```
-
+ - 分析 coredump
+	 - `gdb executable_file coredump_file`
 ## 除錯參數設定
  - `disable-randomization`：
      - `on` 會將 ASLR 關閉（預設）
