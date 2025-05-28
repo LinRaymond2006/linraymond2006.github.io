@@ -58,10 +58,10 @@ params:
 
   footer:
     displayCopyright: false
-    displayPoweredBy: true
+    displayPoweredBy: false
 
   editURL:
-    enable: true
+    enable: false
     base: "https://github.com/linraymond2006/linraymond2006.github.io/content"
 
   theme:
