@@ -1,6 +1,6 @@
 ---
-title: About me
-type: about
+title: My notes
+toc: false
 ---
 
 Nothing to see here for now...
