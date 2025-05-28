@@ -1,5 +1,5 @@
 # Hugo configuration file
-title: Raymond's blog
+title: Raymond's lil corner
 
 # import hextra as module
 module:
@@ -69,7 +69,8 @@ params:
     displayToggle: false
 
   page:
-    width: wide
+#      width: wide
+     width: full
 
   highlight:
     copy:
