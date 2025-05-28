@@ -50,7 +50,7 @@ PGP fingerprint
 FD1F BF75 466B FEAB B130 002A 36AD CFB9 63D5 34FA
 ```
 
-PGP public key
+PGP public key. Download it [here](/_resources/pgp.asc)
 ```plain
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
