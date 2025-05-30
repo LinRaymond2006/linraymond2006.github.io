@@ -80,4 +80,4 @@ params:
       display: hover
 
   displayUpdatedDate: true
-  dateFormat: "2023-10-15"
+  dateFormat: "2006-01-02"
