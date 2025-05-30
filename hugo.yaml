@@ -51,6 +51,8 @@ menu:
 #      params:
 #        icon: x-twitter
 
+enableGitInfo: true
+
 params:
   navbar:
     displayTitle: true
@@ -76,3 +78,6 @@ params:
     copy:
       enable: true
       display: hover
+
+  displayUpdatedDate: true
+  dateFormat: "2023-10-15"
