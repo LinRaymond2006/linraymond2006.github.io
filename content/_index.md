@@ -1,5 +1,5 @@
 ---
-title: Raymond's lil corner
+title: Raymond's little corner
 toc: false
 ---
 
