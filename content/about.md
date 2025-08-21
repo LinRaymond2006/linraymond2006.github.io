@@ -63,7 +63,7 @@ OpenPGP public keys / Finger prints:
 {{< /cards >}}
 
 {{< cards cols="2" >}}
-  {{< card link="/_resources/Raymond_b14902079@ntu.edu.tw-0x6C24447703F9F6DC-pub.asc" title="b14902079@ntu.edu.tw" icon="key" subtitle="24D7 CE21 771E C2B3 5A5E 0DF4 6C24 4477 03F9 F6DC">}}
+  {{< card link="/_resources/Raymond_b14902079@ntu.edu.tw-0x0545459CC38EBD82-pub.asc" title="b14902079@ntu.edu.tw" icon="key" subtitle="EBCA 1AAA 32EA 87D3 26DD EEEF 0545 459C C38E BD82">}}
   {{< card link="/_resources/icedtea.raymond_raymond@ic3dt3a.org-0x94160158CE4E268F-pub.asc" title="raymond@ic3dt3a.org" icon="key" subtitle="CCAA 513F D4C5 0DEF CFEF D249 9416 0158 CE4E 268F">}}
 {{< /cards >}}
 
